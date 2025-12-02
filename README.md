@@ -1,6 +1,6 @@
 
 <!-- TOC ignore:true -->
-# imaging-reports
+# user-count_App
 
 <!-- TOC ignore:true -->
 ## Table of content
@@ -62,7 +62,7 @@ The Shiny App is written in [Shiny](https://shiny.posit.co/) using [RStudio](htt
 
 ### Download the repository
 There are two ways to get the App: 
-1. Download my [GitHub repository](https://github.com/ivan-paleo/user-count_App/archive/refs/heads/main.zip) or its latest [release](https://github.com/ivan-paleo/imaging-reports/releases) as a ZIP archive, and unzip it. You can access the repository with the source code by clicking on the button in the side bar of the App (see [side bar](#side-bar)).  
+1. Download my [GitHub repository](https://github.com/ivan-paleo/user-count_App/archive/refs/heads/main.zip) or its latest [release](https://github.com/ivan-paleo/user-count_App/releases) as a ZIP archive, and unzip it. You can access the repository with the source code by clicking on the button in the side bar of the App (see [side bar](#side-bar)).  
 2. [Fork and clone](https://happygitwithr.com/fork-and-clone.html) my [GitHub repository](https://github.com/ivan-paleo/user-count_App).
 
 
@@ -146,7 +146,7 @@ The table can be downloaded to XLSX or ODS files but clicking on the buttons at 
 
 ## Tab "Experiments over time" 
 In this tab, the evolution of the number of experiments (acquisitions) is shown over time.  
-The table can be downloaded to XLSX or ODS files but clicking on the buttons at the bottom of the tab.
+The graph can be downloaded to PDF or PNG files but clicking on the buttons at the bottom of the tab.
 
 
 ><p align="center" width="100%">
