@@ -45,7 +45,7 @@ ui <- fluidPage(
       # Credit
       splitLayout(cellWidths = c("50%", "50%"),
                   h5("By Ivan Calandra"),
-                  actionButton("GitHub", "user-count",
+                  actionButton("GitHub", "user-count_App",
                                icon = icon("github", lib = "font-awesome"),
                                onclick = "window.open('https://github.com/ivan-paleo/user-count_App', '_blank')")),
 
@@ -83,8 +83,8 @@ ui <- fluidPage(
           downloadButton("downloadPIODS", "Download to ODS")
         )),
 
-        tabPanel("Scans over time", fluidRow(
-          h2("Number of experiments for each PI"),
+        tabPanel("Experiments over time", fluidRow(
+          h2("Number of experiments over time"),
           plotOutput("time"),
           downloadButton("downloadTimePDF", "Download to PDF"),
           downloadButton("downloadTimePNG", "Download to PNG"),
@@ -116,8 +116,9 @@ server <- function(input, output) {
 
     # Extract PI names and dates of scans
     PI <- sapply(experiments, FUN = function(x) c(x[["metadata_decoded"]][["extra_fields"]][["PI"]][["value"]]))
-    Scan_date <- sapply(experiments, FUN = function(x) Date = c(x[["date"]]))
-    table_users <- data.frame(PI = PI, Date = Scan_date)  %>%
+    Scan_date <- sapply(experiments, FUN = function(x) c(x[["date"]]))
+    equip <- sapply(experiments, FUN = function(x) c(x[["items_links"]][[1]][["title"]]))
+    table_users <- data.frame(PI = PI, Date = Scan_date, Instrument = equip)  %>%
                    arrange(PI)
     return(table_users)
   })
@@ -133,7 +134,7 @@ server <- function(input, output) {
   output$PI <- renderTable({
     temp <- table(experiments()[["PI"]]) %>%
               as.data.frame(stringsAsFactors = FALSE)
-    colnames(temp) <- c("PI", "Number of scans")
+    colnames(temp) <- c("PI", "Number of acquisitions")
     assign("PI_exp", temp, envir = .GlobalEnv)
     return(PI_exp)
   }, rownames = TRUE)
@@ -142,12 +143,13 @@ server <- function(input, output) {
   # 3.4 Output plot of scans over time
   output$time <- renderPlot({
     use_time <- experiments() %>%
-      mutate(Month = month(Date, label = TRUE)) %>%
-      group_by(Month) %>%
-      summarise(Sum = n())
-    ggplot(use_time, aes(x = Month, y = Sum)) +
+                mutate(Date = as.Date(Date)) %>%
+                mutate(YearMonth = format(Date, format = "%Y-%m")) %>%
+                group_by(YearMonth) %>%
+                summarise(Sum = n())
+    ggplot(use_time, aes(x = YearMonth, y = Sum)) +
       geom_col() +
-      labs(y = "Number of scans", title = year(str_extract_date(input$JSONfile$name))) +
+      labs(y = "Number of experiments", x = " Year - month") +
       theme_classic()
   })
 
