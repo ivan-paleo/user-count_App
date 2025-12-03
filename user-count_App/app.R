@@ -10,7 +10,6 @@
 #####################
 
 library(ggplot2)
-library(mark)
 library(readODS)
 library(rjson)
 library(shiny)
@@ -28,7 +27,7 @@ library(writexl)
 ui <- fluidPage(
 
   # 2.1. Application title
-  titlePanel("Create a report for your microscope images acquired at the Imaging Platform At LEIZA (IMPALA)"),
+  titlePanel("Usage statistics at the Imaging Platform At LEIZA (IMPALA)"),
 
   sidebarLayout(
 
@@ -50,7 +49,7 @@ ui <- fluidPage(
                                onclick = "window.open('https://github.com/ivan-paleo/user-count_App', '_blank')")),
 
       # Version number / date - ADJUST WITH NEW VERSION / DATE
-      h5("v0.1 (2025-12-02)"),
+      h5("v1.0 (2025-12-03)"),
 
       # Set minimum size of elements in the sidebar
       tags$head(
