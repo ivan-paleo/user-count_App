@@ -50,7 +50,7 @@ If you would like to adapt the App to your needs, check the sections [How to ada
 # How to use the App
 
 ## On the LEIZA server
-**The easiest is to run the App on the LEIZA server:** https://tools.leiza.de/xxx/ **(TO ADJUST)**
+**The easiest is to run the App on the LEIZA server:** https://tools.leiza.de/user-count/
 
 ## Locally with RStudio
 Alternatively, the App can also be run locally using RStudio.  
