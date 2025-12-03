@@ -30,8 +30,8 @@
 ---
 
 
-*The releases are available and citable on Zenodo* **(TO ADJUST)**  
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.XXX.svg)](https://doi.org/10.5281/zenodo.XXX)
+*The releases are available and citable on Zenodo*
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.17799578.svg)](https://doi.org/10.5281/zenodo.17799578)
 
 
 ---
