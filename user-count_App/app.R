@@ -38,27 +38,33 @@ ui <- fluidPage(
       fileInput("JSONfile", "Choose JSON File (exported from eLabFTW)",
                 multiple = FALSE, accept = ".json"),
 
+      # Separator line
+      hr(style = "border-top: 1px solid #000000;"),
+
       # LEIZA logo
       img(src = "Leiza_Logo_Deskriptor_CMYK_rot_LEIZA.png", height = 150),
 
-      # Credit
-      splitLayout(cellWidths = c("50%", "50%"),
-                  h5("By Ivan Calandra"),
+      # Separator line
+      hr(style = "border-top: 1px solid #000000;"),
+
+      # GitHub
+      splitLayout(cellWidths = c("40%", "60%"),
                   actionButton("GitHub", "user-count_App",
                                icon = icon("github", lib = "font-awesome"),
-                               onclick = "window.open('https://github.com/ivan-paleo/user-count_App', '_blank')")),
+                               onclick = "window.open('https://github.com/ivan-paleo/user-count_App', '_blank')"),
+                  h5(HTML("&#129152; Infos and help"))
+      ),
 
-      # Version number / date - ADJUST WITH NEW VERSION / DATE
-      h5("v1.0 (2025-12-03)"),
 
-      # Set minimum size of elements in the sidebar
-      tags$head(
-        tags$style(type = "text/css", "select { min-width: 350px; }"),
-        tags$style(type = "text/css", ".span4 { min-width: 350px; }"),
-        tags$style(type = "text/css", "textarea { min-width: 350px; }"),
-        tags$style(type = "text/css", ".jslider { min-width: 350px; }"),
-        tags$style(type = "text/css", ".well { min-width: 350px; }")
-      )
+            # Version number / date - ADJUST WITH NEW VERSION / DATE
+      # Credits
+      splitLayout(cellWidths = c("50%", "50%"),
+                  h5("v1.1 (2026-07-14)"),
+                  h5("By Ivan Calandra")
+      ),
+
+      # Width of the sidebar (default = 2)
+      width = 3
     ),
 
     # 2.3. Main panel
