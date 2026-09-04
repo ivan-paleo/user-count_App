@@ -20,18 +20,28 @@ library(writexl)
 ###############################################################################################################
 
 
+###############################
+# 2. Increase file size limit #
+###############################
+
+options(shiny.maxRequestSize = 10*1024^2)  # 10 MB limit
+
+
+###############################################################################################################
+
+
 ################
-# 2. Define UI #
+# 3. Define UI #
 ################
 
 ui <- fluidPage(
 
-  # 2.1. Application title
+  # 3.1. Application title
   titlePanel("Usage statistics at the Imaging Platform At LEIZA (IMPALA)"),
 
   sidebarLayout(
 
-    # 2.2. Sidebar
+    # 3.2. Sidebar
     sidebarPanel(
 
       # upload JSON file
@@ -56,10 +66,10 @@ ui <- fluidPage(
       ),
 
 
-            # Version number / date - ADJUST WITH NEW VERSION / DATE
+      # Version number / date - ADJUST WITH NEW VERSION / DATE
       # Credits
       splitLayout(cellWidths = c("50%", "50%"),
-                  h5("v1.1 (2026-07-14)"),
+                  h5("v1.1.1 (2026-09-04)"),
                   h5("By Ivan Calandra")
       ),
 
@@ -67,7 +77,7 @@ ui <- fluidPage(
       width = 3
     ),
 
-    # 2.3. Main panel
+    # 3.3. Main panel
     mainPanel(
 
       # Tabs
@@ -104,12 +114,12 @@ ui <- fluidPage(
 
 
 ##########################
-# 3. Define server logic #
+# 4. Define server logic #
 ##########################
 
 server <- function(input, output) {
 
-  # 3.1 Read and format data
+  # 4.1 Read and format data
   # Use reactive() to use input file
   experiments <- reactive({
 
@@ -129,13 +139,13 @@ server <- function(input, output) {
   })
 
 
-  # 3.2 Output table of experiments
+  # 4.2 Output table of experiments
   output$exp <- renderTable({
     experiments()
   }, rownames = TRUE)
 
 
-  # 3.3 Output table of PIs
+  # 4.3 Output table of PIs
   output$PI <- renderTable({
     temp <- table(experiments()[["PI"]]) %>%
               as.data.frame(stringsAsFactors = FALSE)
@@ -145,7 +155,7 @@ server <- function(input, output) {
   }, rownames = TRUE)
 
 
-  # 3.4 Output plot of scans over time
+  # 4.4 Output plot of scans over time
   output$time <- renderPlot({
     use_time <- experiments() %>%
                 mutate(Date = as.Date(Date)) %>%
@@ -159,8 +169,8 @@ server <- function(input, output) {
   })
 
 
-  # 3.5 Define what happens when clicking on the download buttons
-  # 3.5.1. Experiments to ODS
+  # 4.5 Define what happens when clicking on the download buttons
+  # 4.5.1. Experiments to ODS
   output$downloadExpODS <- downloadHandler(
 
     # Create file name for file to be downloaded
@@ -174,7 +184,7 @@ server <- function(input, output) {
     }
   )
 
-  # 3.5.2. PIs to ODS
+  # 4.5.2. PIs to ODS
   output$downloadPIODS <- downloadHandler(
     filename = function() {
       paste0("IMPALA-usage_PIs_", format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".ods")
@@ -184,7 +194,7 @@ server <- function(input, output) {
     }
   )
 
-  # 3.5.3. Experiments to XLSX
+  # 4.5.3. Experiments to XLSX
   output$downloadExpXLSX <- downloadHandler(
     filename = function() {
       paste0("IMPALA-usage_experiments_", format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".xlsx")
@@ -194,7 +204,7 @@ server <- function(input, output) {
     }
   )
 
-  # 3.5.4. PIs to XLSX
+  # 4.5.4. PIs to XLSX
   output$downloadPIXLSX <- downloadHandler(
     filename = function() {
       paste0("IMPALA-usage_PIs_", format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".xlsx")
@@ -204,7 +214,7 @@ server <- function(input, output) {
     }
   )
 
-  # 3.5.5. Graph PDF
+  # 4.5.5. Graph PDF
   output$downloadTimePDF <- downloadHandler(
     filename = function() {
       paste0("IMPALA-usage_Time_", format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".pdf")
@@ -214,7 +224,7 @@ server <- function(input, output) {
     }
   )
 
-  # 3.5.6. Graph PNG
+  # 4.5.6. Graph PNG
   output$downloadTimePNG <- downloadHandler(
     filename = function() {
       paste0("IMPALA-usage_Time_", format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".png")
@@ -231,7 +241,7 @@ server <- function(input, output) {
 
 
 ##########################
-# 4. Run the application #
+# 5. Run the application #
 ##########################
 
 # Run the application
