@@ -19,6 +19,7 @@
     - [Side bar](#side-bar)
     - [Tab "All experiments"](#tab-all-experiments)
     - [Tab "PI"](#tab-pi)
+    - [Tab "Instrument"](#tab-instrument)
     - [Tab "Experiments over time"](#tab-experiments-over-time)
 - [How to adapt the App](#how-to-adapt-the-app)
 - [How to contribute](#how-to-contribute)
@@ -115,19 +116,20 @@ Click the icon *user-count_App* to open the repository on GitHub.
 
 
 ## Tab "All experiments" 
-In this tab, all experiments from the JSON file are listed, sorted by PI. The instrument for each experiment is shown as well.
+In this tab, all experiments from the JSON file are listed, sorted by year and PI. The instrument for each experiment is shown as well.
 
 ><p align="center" width="100%">
 >    <img src="screenshots/app_tab-exp.png"><br>
 >    <i>Tab "All experiments" with JSON file uploaded (names of PI hidden).</i>
 ></p>
 
-The table can be downloaded to XLSX or ODS files but clicking on the buttons at the bottom of the tab.
+The table can be downloaded to XLSX or ODS files by clicking on the buttons at the bottom of the tab.
 
 ><p align="center" width="100%">
 >    <img src="screenshots/app_downloadODF-XSLX.png"><br>
 >    <i>Buttons to download to XLSX and ODS.</i>
 ></p>
+
 
 ## Tab "PI" 
 In this tab, the number of experiments (acquisitions) is shown per PI.
@@ -137,22 +139,54 @@ In this tab, the number of experiments (acquisitions) is shown per PI.
 >    <i>Tab "PI" with JSON file uploaded (names of PI hidden).</i>
 ></p>
 
-The table can be downloaded to XLSX or ODS files but clicking on the buttons at the bottom of the tab.
+The table can be downloaded to XLSX or ODS files by clicking on the buttons at the bottom of the tab.
 
 ><p align="center" width="100%">
 >    <img src="screenshots/app_downloadODF-XSLX.png"><br>
 >    <i>Buttons to download to XLSX and ODS.</i>
 ></p>
 
-## Tab "Experiments over time" 
-In this tab, the evolution of the number of experiments (acquisitions) is shown over time.  
-The graph can be downloaded to PDF or PNG files but clicking on the buttons at the bottom of the tab.
 
+## Tab "Instrument"
+In this tab, the number of acquisitions is summed by instrument.
+ 
+><p align="center" width="100%">
+>    <img src="screenshots/app_tab-instr.png"><br>
+>    <i>Tab "Instrument" with JSON file uploaded (number of acquisitions hidden).</i>
+></p>
+
+The table can be downloaded to XLSX or ODS files by clicking on the buttons at the bottom of the tab.
 
 ><p align="center" width="100%">
->    <img src="screenshots/app_tab-time.png"><br>
->    <i>Tab "Experiments over time" with JSON file uploaded (data hidden).</i>
+>    <img src="screenshots/app_downloadODF-XSLX.png"><br>
+>    <i>Buttons to download to XLSX and ODS.</i>
 ></p>
+
+
+## Tab "Experiments over time" 
+In this tab, the evolution of the number of experiments (acquisitions) is shown over time.  
+Note that for anything to show, you first need to select whether you want to group by year or month.
+
+><p align="center" width="100%">
+>    <img src="screenshots/app_tab-time_no-selection.png"><br>
+>    <i>No grouping option selected.</i>
+></p>
+
+When the JSON file contains a lot of entries, grouping per month might result in too many bars.
+
+><p align="center" width="100%">
+>    <img src="screenshots/app_tab-time_month.png"><br>
+>    <i>Tab "Experiments over time" with JSON file uploaded and grouping per month (data hidden).</i>
+></p>
+
+Grouping per year is cleaner with lots of entries.
+
+><p align="center" width="100%">
+>    <img src="screenshots/app_tab-time_year.png"><br>
+>    <i>Tab "Experiments over time" with JSON file uploaded and grouping per year (data hidden).</i>
+></p>
+
+The graph currently displayed (i.e. month or year) can be downloaded to PDF or PNG files by clicking on the buttons at the bottom of the tab.
 
 
 ---
