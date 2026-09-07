@@ -46,7 +46,8 @@ If you would like to adapt the App to your needs, check the sections [How to ada
 # How to use the App
 
 ## On the LEIZA server
-**The easiest is to run the App on the LEIZA server:** https://tools.leiza.de/user-count/
+**The easiest is to run the App on the LEIZA server:** https://tools.leiza.de/user-count/  
+The server is updated every night, so be a bit patient if you want to use the brand new version, or [run locally](#locally-with-rstudio).
 
 ## Locally with RStudio
 Alternatively, the App can also be run locally using RStudio.  
@@ -99,7 +100,7 @@ The only way to save input is by using the download buttons at the end of each t
 # Operating instructions
 ## Side bar
 Upload a single JSON file of the experiments exported from eLabFTW by clicking on *Browse*.  
-You can try with the [sample data](/sample-data/export-elabftw_sample-data.json) in the repository. The screenshots below use this JSON file.
+You can try with the [sample data](/sample-data/export-elabftw_sample-data.json) in the repository. It contains only mock-up data for demonstration only. Nevertheless, it has been extracted from eLabFTW so it has the structure of a JSON file extracted from this electronic lab notebook. The screenshots below use this JSON file.
 
 The content of the tabs is generated automatically from the input file.
 
