@@ -13,6 +13,7 @@ library(ggplot2)
 library(readODS)
 library(rjson)
 library(shiny)
+library(shinyWidgets)
 library(tidyverse)
 library(writexl)
 
@@ -48,6 +49,11 @@ ui <- fluidPage(
       font-weight: bold;
       border-top: 3px solid #333;
     }
+    /* Right-align numeric columns by position (e.g., 2nd and 3rd columns) */
+    #summary-last-line table td:nth-child(2),
+    #summary-last-line table th:nth-child(2) {
+    text-align: right;
+  }
   ")),
 
 
@@ -84,7 +90,7 @@ ui <- fluidPage(
       # Version number / date - ADJUST WITH NEW VERSION / DATE
       # Credits
       splitLayout(cellWidths = c("50%", "50%"),
-                  h5("v1.2 (2026-09-04)"),
+                  h5("v1.3 (2026-09-07)"),
                   h5("By Ivan Calandra")
       ),
 
@@ -108,7 +114,13 @@ ui <- fluidPage(
 
         tabPanel("PI", fluidRow(
           h2("Number of experiments for each PI"),
-          tableOutput("PI"),
+
+          # Check box to select instrument(s)
+          # Will be defined in the server in order to extract values from the input file
+          uiOutput("checkbox_instrPI"),
+
+          # Apply the style 'summary-last-line'
+          tags$div(id = "summary-last-line", tableOutput("PI")),
           downloadButton("downloadPIXLSX", "Download to XLSX"),
           downloadButton("downloadPIODS", "Download to ODS")
         )),
@@ -116,16 +128,47 @@ ui <- fluidPage(
         tabPanel("Instrument", fluidRow(
           h2("Number of experiments per instrument"),
 
+          # Check box to select type(s) of acquisition
+          # Will be defined in the server in order to extract values from the input file
+          uiOutput("checkbox_ServInstr"),
+
           # Apply the style 'summary-last-line'
           tags$div(id = "summary-last-line", tableOutput("instr")),
           downloadButton("downloadInstrXLSX", "Download to XLSX"),
           downloadButton("downloadInstrODS", "Download to ODS")
         )),
 
+        tabPanel("Type", fluidRow(
+          h2("Number of experiments per type"),
+
+          # Check box to select instrument(s)
+          # Will be defined in the server in order to extract values from the input file
+          uiOutput("checkbox_instrServ"),
+
+          # Apply the style 'summary-last-line'
+          tags$div(id = "summary-last-line", tableOutput("serv")),
+          downloadButton("downloadServXLSX", "Download to XLSX"),
+          downloadButton("downloadServODS", "Download to ODS")
+        )),
+
         tabPanel("Experiments over time", fluidRow(
           h2("Number of experiments over time"),
-          actionButton("month", "Per Month"),
-          actionButton("year", "Per Year"),
+
+          # Check box to select instrument(s)
+          # Will be defined in the server in order to extract values from the input file
+          uiOutput("checkbox_instrTime"),
+
+          # Check box to select type(s) of acquisition
+          # Will be defined in the server in order to extract values from the input file
+          uiOutput("checkbox_ServTime"),
+
+          # Radio buttons that look like action buttons
+          radioGroupButtons(
+            inputId = "time_group",
+            label = "Time grouping",
+            choices = c("Month-Year", "Year"),
+            selected = "Month-Year"
+          ),
           hr(),
           plotOutput("time"),
           downloadButton("downloadTimePDF", "Download to PDF"),
@@ -177,7 +220,9 @@ server <- function(input, output) {
     Scan_date <- sapply(experiments, FUN = function(x) c(x[["date"]]))
     Scan_year <- format(as.Date(Scan_date), "%Y")
     equip <- sapply(experiments, FUN = function(x) c(x[["items_links"]][[1]][["title"]]))
-    table_users <- data.frame(PI = PI, Date = Scan_date, Year = Scan_year, Instrument = equip)  %>%
+    serv <- sapply(experiments, FUN = function(x) c(x[["metadata_decoded"]][["extra_fields"]][["Service"]][["value"]]))
+    serv_reco <- ifelse(serv == "Yes", "Service", "Collaboration")
+    table_users <- data.frame(PI = PI, Date = Scan_date, Year = Scan_year, Type = serv_reco, Instrument = equip) %>%
                    arrange(Year, PI)
     return(table_users)
   })
@@ -190,18 +235,52 @@ server <- function(input, output) {
 
 
   # 4.3 Output table of PIs
+  # 4.3.1 Select instruments
+  output$checkbox_instrPI <- renderUI({
+
+    # Get instruments from uploaded file
+    instr_list <- unique(experiments()[["Instrument"]])
+
+    # Create checkbox group with all instruments
+    checkboxGroupInput("sel_instrPI", "Select instrument(s)",
+                       choices = instr_list,
+                       selected = instr_list) # Select all by default
+  })
+
+  # 4.3.2 Filter instruments
+  filtered_instrPI <- reactive({
+    experiments() %>% filter(Instrument %in% input$sel_instrPI)
+  })
+
+  # 4.3.3 Table of PIs
   output$PI <- renderTable({
-    use_PI <- table(experiments()[["PI"]]) %>%
-              as.data.frame(stringsAsFactors = FALSE)
+    use_PI <- table(filtered_instrPI()[["PI"]]) %>%
+              as.data.frame()
+    total_row_PI <- data.frame(Var1 = "Total", Freq = sum(use_PI$Freq))
+    use_PI <- rbind(use_PI, total_row_PI)
     colnames(use_PI) <- c("PI", "Number of acquisitions")
     assign("PI_exp", use_PI, envir = .GlobalEnv)
     return(PI_exp)
-  }, rownames = TRUE)
+  })
 
 
   # 4.4 Output table of instruments
+  # 4.4.1 Select type (see 4.3.1)
+  output$checkbox_ServInstr <- renderUI({
+      serv_list <- unique(experiments()[["Type"]])
+      checkboxGroupInput("sel_TypeServ", "Select type(s)",
+                         choices = serv_list,
+                         selected = serv_list)
+    })
+
+  # 4.4.2 Filter instruments
+  filtered_ServInstr <- reactive({
+      experiments() %>% filter(Type %in% input$sel_TypeServ)
+  })
+
+  # 4.4.3 Table of instruments
   output$instr <- renderTable({
-    use_instr <- experiments() %>%
+    use_instr <- filtered_ServInstr() %>%
       group_by(Instrument) %>%
       summarise(Sum = n())
     colnames(use_instr) <- c("Instrument", "Number of acquisitions")
@@ -211,35 +290,87 @@ server <- function(input, output) {
   })
 
 
-  # 4.5 Output plot of scans over time
-  v <- reactiveValues(data = NULL)
+  # 4.5 Output table of services
+  # 4.5.1 Select instruments (see 4.3.1)
+  output$checkbox_instrServ <- renderUI({
+    instr_list <- unique(experiments()[["Instrument"]])
+    checkboxGroupInput("sel_instrServ", "Select instrument(s)",
+                       choices = instr_list,
+                       selected = instr_list)
+  })
 
-  observeEvent(input$month, {
-    v$data <- experiments() %>%
+  # 4.5.2 Filter instruments
+  filtered_instrServ <- reactive({
+    experiments() %>% filter(Instrument %in% input$sel_instrServ)
+  })
+
+  # 4.5.3 Table of services
+  output$serv <- renderTable({
+    use_serv <- filtered_instrServ() %>%
+      group_by(Type) %>%
+      summarise(`Number of acquisitions` = n())
+    use_serv <- rbind(use_serv, c("Total", sum(use_serv[["Number of acquisitions"]])))
+    assign("Serv_exp", use_serv, envir = .GlobalEnv)
+    return(Serv_exp)
+  })
+
+
+  # 4.6 Output plot of scans over time
+  # 4.6.1 Select instruments (see 4.3.1)
+  output$checkbox_instrTime <- renderUI({
+    instr_list <- unique(experiments()[["Instrument"]])
+    checkboxGroupInput("sel_instrTime", "Select instrument(s)",
+                       choices = instr_list,
+                       selected = instr_list) # Select all by default
+  })
+
+  # 4.6.2 Select types (see 4.3.1)
+  output$checkbox_ServTime <- renderUI({
+    serv_list <- unique(experiments()[["Type"]])
+    checkboxGroupInput("sel_TypeTime", "Select type(s)",
+                       choices = serv_list,
+                       selected = serv_list)
+  })
+
+  # 4.6.3 Filter instruments and types
+  filtered_Time <- reactive({
+    experiments() %>%
+      filter(Instrument %in% input$sel_instrTime) %>%
+      filter(Type %in% input$sel_TypeTime)
+  })
+
+  # 4.6.4 Group
+  grouped_data <- reactive({
+    if (input$time_group == "Month-Year") {
+      temp <- filtered_Time() %>%
               mutate(Date = as.Date(Date)) %>%
-              mutate(x_axis = format(Date, format = "%Y-%m")) %>%
-              group_by(x_axis) %>%
-              summarise(Sum = n())
+              mutate(x_axis = format(Date, format = "%Y-%m"))
+    }
+    if (input$time_group == "Year") {
+      temp <- filtered_Time() %>%
+              mutate(x_axis = Year)
+    }
+    temp <- temp %>%
+            group_by(x_axis) %>%
+            summarise(Sum = n())
+    return(temp)
   })
 
-  observeEvent(input$year, {
-    v$data <- experiments() %>%
-              mutate(x_axis = Year) %>%
-              group_by(x_axis) %>%
-              summarise(Sum = n())
-  })
-
+  # 4.6.5 Plot
   output$time <- renderPlot({
-    ggplot(v$data, aes(x = x_axis, y = Sum)) +
+    ggplot(grouped_data(), aes(x = x_axis, y = Sum)) +
       geom_col() +
       labs(y = "Number of experiments", x = NULL) +
       theme_classic() +
-      theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
+      theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1)) +
+
+      # Round y-axis labels to integer
+      scale_y_continuous(breaks = function(limits) round(pretty(limits)))
   })
 
 
-  # 4.6 Define what happens when clicking on the download buttons
-  # 4.6.1. Experiments to ODS
+  # 4.7 Define what happens when clicking on the download buttons
+  # 4.7.1 Experiments to ODS
   output$downloadExpODS <- downloadHandler(
 
     # Create file name for file to be downloaded
@@ -253,7 +384,7 @@ server <- function(input, output) {
     }
   )
 
-  # 4.6.2. Experiments to XLSX
+  # 4.7.2 Experiments to XLSX
   output$downloadExpXLSX <- downloadHandler(
     filename = function() {
       paste0("IMPALA-usage_experiments_", format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".xlsx")
@@ -263,7 +394,7 @@ server <- function(input, output) {
     }
   )
 
-  # 4.6.3. PIs to ODS
+  # 4.7.3 PIs to ODS
   output$downloadPIODS <- downloadHandler(
     filename = function() {
       paste0("IMPALA-usage_PIs_", format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".ods")
@@ -273,7 +404,7 @@ server <- function(input, output) {
     }
   )
 
-  # 4.6.4. PIs to XLSX
+  # 4.7.4 PIs to XLSX
   output$downloadPIXLSX <- downloadHandler(
     filename = function() {
       paste0("IMPALA-usage_PIs_", format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".xlsx")
@@ -283,7 +414,7 @@ server <- function(input, output) {
     }
   )
 
-  # 4.6.5. Instruments to ODS
+  # 4.7.5 Instruments to ODS
   output$downloadInstrODS <- downloadHandler(
     filename = function() {
       paste0("IMPALA-usage_Instruments_", format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".ods")
@@ -293,7 +424,7 @@ server <- function(input, output) {
     }
   )
 
-  # 4.6.6. Instruments to XLSX
+  # 4.7.6 Instruments to XLSX
   output$downloadInstrXLSX <- downloadHandler(
     filename = function() {
       paste0("IMPALA-usage_Instruments_", format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".xlsx")
@@ -303,7 +434,27 @@ server <- function(input, output) {
     }
   )
 
-  # 4.6.7. Graph PDF
+  # 4.7.7 Services to ODS
+  output$downloadServODS <- downloadHandler(
+    filename = function() {
+      paste0("IMPALA-usage_Services_", format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".ods")
+    },
+    content = function(file){
+      readODS::write_ods(Serv_exp, file)
+    }
+  )
+
+  # 4.7.8 Services to XLSX
+  output$downloadServXLSX <- downloadHandler(
+    filename = function() {
+      paste0("IMPALA-usage_Services_", format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".xlsx")
+    },
+    content = function(file){
+      writexl::write_xlsx(Serv_exp, file)
+    }
+  )
+
+  # 4.7.9 Graph PDF
   output$downloadTimePDF <- downloadHandler(
     filename = function() {
       paste0("IMPALA-usage_Time_", format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".pdf")
@@ -313,7 +464,7 @@ server <- function(input, output) {
     }
   )
 
-  # 4.6.8. Graph PNG
+  # 4.7.10 Graph PNG
   output$downloadTimePNG <- downloadHandler(
     filename = function() {
       paste0("IMPALA-usage_Time_", format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".png")

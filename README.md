@@ -1,10 +1,4 @@
 
-<!-- TOC ignore:true -->
-# user-count_App
-
-<!-- TOC ignore:true -->
-## Table of content
-
 <!-- TOC -->
 
 - [Purpose](#purpose)
@@ -20,6 +14,7 @@
     - [Tab "All experiments"](#tab-all-experiments)
     - [Tab "PI"](#tab-pi)
     - [Tab "Instrument"](#tab-instrument)
+    - [Tab "Type"](#tab-type)
     - [Tab "Experiments over time"](#tab-experiments-over-time)
 - [How to adapt the App](#how-to-adapt-the-app)
 - [How to contribute](#how-to-contribute)
@@ -103,7 +98,8 @@ The only way to save input is by using the download buttons at the end of each t
 
 # Operating instructions
 ## Side bar
-Upload a single JSON file of the experiments exported from eLabFTW by clicking on *Browse*. 
+Upload a single JSON file of the experiments exported from eLabFTW by clicking on *Browse*.  
+You can try with the [sample data](/sample-data/export-elabftw_sample-data.json) in the repository. The screenshots below use this JSON file.
 
 The content of the tabs is generated automatically from the input file.
 
@@ -116,11 +112,11 @@ Click the icon *user-count_App* to open the repository on GitHub.
 
 
 ## Tab "All experiments" 
-In this tab, all experiments from the JSON file are listed, sorted by year and PI. The instrument for each experiment is shown as well.
+In this tab, all experiments (= acquisitions) from the JSON file are listed, sorted by year and PI. The instrument and the type of acquisition for each experiment is shown as well.
 
 ><p align="center" width="100%">
 >    <img src="screenshots/app_tab-exp.png"><br>
->    <i>Tab "All experiments" with JSON file uploaded (names of PI hidden).</i>
+>    <i>Tab "All experiments" with JSON file uploaded.</i>
 ></p>
 
 The table can be downloaded to XLSX or ODS files by clicking on the buttons at the bottom of the tab.
@@ -132,11 +128,11 @@ The table can be downloaded to XLSX or ODS files by clicking on the buttons at t
 
 
 ## Tab "PI" 
-In this tab, the number of experiments (acquisitions) is shown per PI.
+In this tab, the number of acquisitions is summed by PI. Filter by instrument as needed. 
 
 ><p align="center" width="100%">
 >    <img src="screenshots/app_tab-PI.png"><br>
->    <i>Tab "PI" with JSON file uploaded (names of PI hidden).</i>
+>    <i>Tab "PI" with JSON file uploaded.</i>
 ></p>
 
 The table can be downloaded to XLSX or ODS files by clicking on the buttons at the bottom of the tab.
@@ -148,11 +144,27 @@ The table can be downloaded to XLSX or ODS files by clicking on the buttons at t
 
 
 ## Tab "Instrument"
-In this tab, the number of acquisitions is summed by instrument.
+In this tab, the number of acquisitions is summed by instrument. Filter by type as needed.
  
 ><p align="center" width="100%">
 >    <img src="screenshots/app_tab-instr.png"><br>
->    <i>Tab "Instrument" with JSON file uploaded (number of acquisitions hidden).</i>
+>    <i>Tab "Instrument" with JSON file uploaded.</i>
+></p>
+
+The table can be downloaded to XLSX or ODS files by clicking on the buttons at the bottom of the tab.
+
+><p align="center" width="100%">
+>    <img src="screenshots/app_downloadODF-XSLX.png"><br>
+>    <i>Buttons to download to XLSX and ODS.</i>
+></p>
+
+
+## Tab "Type"
+In this tab, the number of acquisitions is summed by instrument. Filter by instrument as needed.
+
+><p align="center" width="100%">
+>    <img src="screenshots/app_tab-type.png"><br>
+>    <i>Tab "Type" with JSON file uploaded.</i>
 ></p>
 
 The table can be downloaded to XLSX or ODS files by clicking on the buttons at the bottom of the tab.
@@ -164,29 +176,28 @@ The table can be downloaded to XLSX or ODS files by clicking on the buttons at t
 
 
 ## Tab "Experiments over time" 
-In this tab, the evolution of the number of experiments (acquisitions) is shown over time.  
-Note that for anything to show, you first need to select whether you want to group by year or month.
+In this tab, the evolution of the number of acquisitions is shown over time. Filter by instrument and/or type as needed.
 
-><p align="center" width="100%">
->    <img src="screenshots/app_tab-time_no-selection.png"><br>
->    <i>No grouping option selected.</i>
-></p>
-
-When the JSON file contains a lot of entries, grouping per month might result in too many bars.
+When the JSON file contains a lot of entries, grouping per month+year might result in too many bars.
 
 ><p align="center" width="100%">
 >    <img src="screenshots/app_tab-time_month.png"><br>
->    <i>Tab "Experiments over time" with JSON file uploaded and grouping per month (data hidden).</i>
+>    <i>Tab "Experiments over time" with JSON file uploaded and grouping per month.</i>
 ></p>
 
 Grouping per year is cleaner with lots of entries.
 
 ><p align="center" width="100%">
 >    <img src="screenshots/app_tab-time_year.png"><br>
->    <i>Tab "Experiments over time" with JSON file uploaded and grouping per year (data hidden).</i>
+>    <i>Tab "Experiments over time" with JSON file uploaded and grouping per year.</i>
 ></p>
 
 The graph currently displayed (i.e. month or year) can be downloaded to PDF or PNG files by clicking on the buttons at the bottom of the tab.
+
+><p align="center" width="100%">
+>    <img src="screenshots/app_downloadPDF-PNG.png"><br>
+>    <i>Buttons to download to PDF and PNG.</i>
+></p>
 
 
 ---
