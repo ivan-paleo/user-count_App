@@ -129,7 +129,7 @@ The table can be downloaded to XLSX or ODS files by clicking on the buttons at t
 
 
 ## Tab "PI" 
-In this tab, the number of acquisitions is summed by PI. Filter by instrument as needed. 
+In this tab, the number of acquisitions is summed by PI. Filter by instrument and type as needed. 
 
 ><p align="center" width="100%">
 >    <img src="screenshots/app_tab-PI.png"><br>

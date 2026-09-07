@@ -119,6 +119,10 @@ ui <- fluidPage(
           # Will be defined in the server in order to extract values from the input file
           uiOutput("checkbox_instrPI"),
 
+          # Check box to select type(s) of acquisition
+          # Will be defined in the server in order to extract values from the input file
+          uiOutput("checkbox_ServPI"),
+
           # Apply the style 'summary-last-line'
           tags$div(id = "summary-last-line", tableOutput("PI")),
           downloadButton("downloadPIXLSX", "Download to XLSX"),
@@ -251,12 +255,22 @@ server <- function(input, output) {
                        selected = instr_list) # Select all by default
   })
 
-  # 4.3.2 Filter instruments
-  filtered_instrPI <- reactive({
-    experiments() %>% filter(Instrument %in% input$sel_instrPI)
+  # 4.3.2 Select types (see 4.3.1)
+  output$checkbox_ServPI <- renderUI({
+    serv_list <- unique(experiments()[["Type"]])
+    checkboxGroupInput("sel_TypePI", "Select type(s)",
+                       choices = serv_list,
+                       selected = serv_list)
   })
 
-  # 4.3.3 Table of PIs
+  # 4.3.3 Filter instruments
+  filtered_instrPI <- reactive({
+    experiments() %>%
+    filter(Instrument %in% input$sel_instrPI) %>%
+    filter(Type %in% input$sel_TypePI)
+  })
+
+  # 4.3.4 Table of PIs
   output$PI <- renderTable({
     use_PI <- table(filtered_instrPI()[["PI"]]) %>%
               as.data.frame()
@@ -339,8 +353,8 @@ server <- function(input, output) {
   # 4.6.3 Filter instruments and types
   filtered_Time <- reactive({
     experiments() %>%
-      filter(Instrument %in% input$sel_instrTime) %>%
-      filter(Type %in% input$sel_TypeTime)
+    filter(Instrument %in% input$sel_instrTime) %>%
+    filter(Type %in% input$sel_TypeTime)
   })
 
   # 4.6.4 Group
