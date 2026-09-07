@@ -193,6 +193,13 @@ Grouping per year is cleaner with lots of entries.
 >    <i>Tab "Experiments over time" with JSON file uploaded and grouping per year.</i>
 ></p>
 
+Tick the box `Continuous x-axis` if you want to show a continuous timeline on the x-axis, i.e. all months/years from the first to the last experiment including empty months/years. This is particularly useful with the `Month-Year` option to show the undistorted evolution over time. 
+
+><p align="center" width="100%">
+>    <img src="screenshots/app_tab-time_month-cont.png"><br>
+>    <i>Tab "Experiments over time" with JSON file uploaded and grouping per month with continuous x-axis.</i>
+></p>
+
 The graph currently displayed (i.e. month or year) can be downloaded to PDF or PNG files by clicking on the buttons at the bottom of the tab.
 
 ><p align="center" width="100%">

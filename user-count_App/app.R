@@ -90,7 +90,7 @@ ui <- fluidPage(
       # Version number / date - ADJUST WITH NEW VERSION / DATE
       # Credits
       splitLayout(cellWidths = c("50%", "50%"),
-                  h5("v1.3 (2026-09-07)"),
+                  h5("v1.3.1 (2026-09-07)"),
                   h5("By Ivan Calandra")
       ),
 
@@ -169,6 +169,10 @@ ui <- fluidPage(
             choices = c("Month-Year", "Year"),
             selected = "Month-Year"
           ),
+
+          # Check box to show continuous x-axis or current values only
+          checkboxInput("x_cont", "Continuous x-axis", value = FALSE),
+
           hr(),
           plotOutput("time"),
           downloadButton("downloadTimePDF", "Download to PDF"),
@@ -221,7 +225,7 @@ server <- function(input, output) {
     Scan_year <- format(as.Date(Scan_date), "%Y")
     equip <- sapply(experiments, FUN = function(x) c(x[["items_links"]][[1]][["title"]]))
     serv <- sapply(experiments, FUN = function(x) c(x[["metadata_decoded"]][["extra_fields"]][["Service"]][["value"]]))
-    serv_reco <- ifelse(serv == "Yes", "Service", "Collaboration")
+    serv_reco <- ifelse(serv %in% c("Yes", "on"), "Service", "Collaboration")
     table_users <- data.frame(PI = PI, Date = Scan_date, Year = Scan_year, Type = serv_reco, Instrument = equip) %>%
                    arrange(Year, PI)
     return(table_users)
@@ -342,30 +346,74 @@ server <- function(input, output) {
   # 4.6.4 Group
   grouped_data <- reactive({
     if (input$time_group == "Month-Year") {
+
+      # Extract month-year
       temp <- filtered_Time() %>%
               mutate(Date = as.Date(Date)) %>%
               mutate(x_axis = format(Date, format = "%Y-%m"))
     }
     if (input$time_group == "Year") {
+
+      # Extract year
       temp <- filtered_Time() %>%
               mutate(x_axis = Year)
     }
+
+    # Group by x_axis (month-year or year) and calculate sum by group
     temp <- temp %>%
             group_by(x_axis) %>%
             summarise(Sum = n())
     return(temp)
   })
 
-  # 4.6.5 Plot
+  # 4.6.5 Continuous x-axis
+  cont_data <- reactive({
+
+    # If checkbox is ticked
+    if (input$x_cont == TRUE) {
+
+      # Create sequence from first to last date
+      first_date <- min(grouped_data()$x_axis)
+      last_date <- max(grouped_data()$x_axis)
+      # For month-year dates
+      if (input$time_group == "Month-Year") {
+        all_dates <- seq.Date(from = as.Date(paste0(first_date, "-01")),
+                              to = as.Date(paste0(last_date, "-01")),
+                              by = "month") %>%
+                     format("%Y-%m")
+      }
+      # For year dates
+      if (input$time_group == "Year") {
+        all_dates <- seq.Date(from = as.Date(paste0(first_date, "-01-01")),
+                              to = as.Date(paste0(last_date, "-01-01")),
+                              by = "year") %>%
+          format("%Y")
+      }
+
+      # Adjust levels of x_axis
+      temp <- grouped_data() %>%
+              mutate(x_axis = factor(x_axis, levels = all_dates))
+    } else {
+
+      # If checkbox is not ticked, do nothing
+      temp <- grouped_data()
+    }
+    return(temp)
+  })
+
+  # 4.6.6 Plot
   output$time <- renderPlot({
-    ggplot(grouped_data(), aes(x = x_axis, y = Sum)) +
+    ggplot(cont_data(), aes(x = x_axis, y = Sum)) +
       geom_col() +
-      labs(y = "Number of experiments", x = NULL) +
+      labs(y = "Number of acquisitions", x = NULL) +
       theme_classic() +
       theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1)) +
 
       # Round y-axis labels to integer
-      scale_y_continuous(breaks = function(limits) round(pretty(limits)))
+      scale_y_continuous(breaks = function(limits) round(pretty(limits))) +
+
+      # Do not drop levels (necessary for continuous x-axis)
+      scale_x_discrete(drop = FALSE)
   })
 
 
